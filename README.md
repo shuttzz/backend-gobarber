@@ -7,6 +7,8 @@
 - yarn add pg
 - yarn add bcryptjs
 - yarn add jsonwebtoken
+- yarn add tsyringe
+	- Pacote para se trabalhar com injeção de dependências
 - yarn add multer
     - Pacote para se trabalhar com upload de arquivos no express
 - yarn add express-async-errors
