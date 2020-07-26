@@ -1,9 +1,10 @@
-import { getRepository, Repository } from 'typeorm';
+import { getRepository, Not, Repository } from 'typeorm';
 
 import IUsersRepository from '@modules/users/repositories/IUsersRepository';
 import ICreateUsersDTO from '@modules/users/dtos/ICreateUserDTO';
 
 import User from '@modules/users/infra/typeorm/entities/User';
+import IFindAllProvidersDTO from '@modules/appointments/dtos/IFindAllProvidersDTO';
 
 class UsersRepository implements IUsersRepository {
 	private ormRepository: Repository<User>;
@@ -26,21 +27,32 @@ class UsersRepository implements IUsersRepository {
 		return user;
 	}
 
-	// public async findByDate(date: Date): Promise<User | undefined> {
-	// const findAppointment = await this.ormRepository.findOne({
-	// where: { date }, // está dessa maneira porque o nome do campo que vamos utilizar é o mesmo nome da variável que estamos recebendo
-	// });
-	// return findAppointment;
-	// }
-
 	public async create(userData: ICreateUsersDTO): Promise<User> {
 		const user = this.ormRepository.create(userData);
 
-		return user;
+		return this.save(user);
 	}
 
 	public async save(user: User): Promise<User> {
 		return this.ormRepository.save(user);
+	}
+
+	public async findAllProviders({
+		exceptUserId,
+	}: IFindAllProvidersDTO): Promise<User[]> {
+		let users: User[];
+
+		if (exceptUserId) {
+			users = await this.ormRepository.find({
+				where: {
+					id: Not(exceptUserId),
+				},
+			});
+		} else {
+			users = await this.ormRepository.find();
+		}
+
+		return users;
 	}
 }
 
